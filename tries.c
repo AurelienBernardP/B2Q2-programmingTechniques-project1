@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "tries.h"
 
@@ -33,9 +34,8 @@ Node* insertWord(Node* head, char* word, size_t index){
     if(!head){
         if(word[index+1] == '\0'){
             head = newNode(newLetter, true);
-        }else{
+        else
             head = newNode(newLetter, false);
-        }
     }
     if(!head)
         return head;
