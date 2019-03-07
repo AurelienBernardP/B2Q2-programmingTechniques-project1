@@ -6,7 +6,7 @@
 
 struct node_t{
     char letter;
-    //int code;  I don't think we need this in our application
+    bool isEndOfWord;
     Node* left;
     Node* right;
     Node* middle; 
@@ -16,25 +16,31 @@ Node* initTrie(void){
     return NULL;
 }
 
-Node* newNode(char newLetter){
+Node* newNode(char newLetter, bool isEnd){
     Node* newNode = malloc(sizeof(Node));
     if(!newNode) return NULL;
 
     newNode->letter = newLetter;
+    newNode->isEndOfWord = isEnd;
     newNode->left = newNode->right = newNode->middle = NULL;
     return newNode;
 }
 
-Node* insertWord(Node* head, char* word, size_t index){
-    if(!word) return head;
+void insertWord(Node* head, char* word, size_t index){
+    if(!word) return;
     
     char newLetter = word[index];
+    if(!head){
+        if(word[index+1] == '\0'){
+            head = newNode(newLetter, true);
+        }else{
+            head = newNode(newLetter, false);
+        }
+    }
     if(!head)
-        head = newNode(newLetter);
-    if(!head)
-        return head;
+        return;
     if(newLetter == '\0')
-        return head;
+        return;
 
     if(newLetter < head->letter)
         head->left = insertWord(head->left, word, index);
@@ -43,20 +49,15 @@ Node* insertWord(Node* head, char* word, size_t index){
     if(newLetter == head->letter)
         head->middle = insertWord(head->middle, word, ++index);
 
-    return head;  
+    return;  
 }
 
-/*    I think isWordInTrie returns true is the word that we are looking for is a prefix of a word in the trie 
-**      i will think about it and fix it if it's the case.
-**
-**
-*/
 bool isWordInTrie(Node* head, char* word, size_t index){
     if(!head || !word)
         return false;
     
     char letter = word[index];
-    if('\0' == letter)
+    if('\0' == letter == head->letter || (word[index+1] == '\0' && head->isEndOfWord && word[index] == head->letter))
         return true;
 
     if(letter < head->letter){
