@@ -1,5 +1,5 @@
 #include<stdlib.h>
-#include<stdlib.h>
+#include<stdio.h>
 
 
 #include"board.h"//name to be changed
@@ -8,26 +8,24 @@
 const size_t MAX_CHAR_PER_SQR = 10;
 const size_t MAX_CHAR_PER_LINE = 200;
 
-typedef struct{
-    char* **puzzle;// matrix of pointers to char arrays
-    size_t size;
-    Node* found;
-}Board;// name to be changed
-
 Board* initBoard(char* path){
     if (!path){
         printf("Error transmiting file name\n");
         return NULL;
     }
     
-    FILE *fp = fopen(path, r);
+    FILE *fp = fopen(path, "r");
     if(!fp){
         printf("Error opening the file contaning the letters matrix\n");
         return NULL;
     }
 
     ///begin the count of elements in the grid by counting the spaces
-    char firstLine[MAX_CHAR_PER_LINE] = {'\0'};
+    char* firstLine = calloc(MAX_CHAR_PER_LINE, sizeof(char));
+    if(!firstLine){
+        printf("error allocating memmory\n");
+        return NULL;
+    }
     fgets(firstLine,MAX_CHAR_PER_LINE,fp);
     
     size_t boardSize = 1;// 1 as there is no space before the first element;
@@ -35,6 +33,7 @@ Board* initBoard(char* path){
         if(firstLine[i] == ' ')
             boardSize++;
     }
+    free(firstLine);
     // end of counting number of elements, stored in boardSize
 
     // allocation of the structure and matrix

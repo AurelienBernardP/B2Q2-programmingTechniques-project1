@@ -59,19 +59,23 @@ bool isWordInTrie(Node* head, char* word, size_t index){
     if('\0' == letter)
         return true;
 
-    if(letter < head->letter)
+    if(letter < head->letter){
         return isWordInTrie(head->left, word, index);
-    if(letter > head->letter)
+    }
+    if(letter > head->letter){
         return isWordInTrie(head->right, word, index);
-    if(letter == head->letter)
-        return isWordInTrie(head->middle, word ++index);
+    }
+    if(letter == head->letter){
+        return isWordInTrie(head->middle, word, ++index);
+    }
+        return true;///will never reach this condition
 }
 
 void destroyTrie(Node* head){
     if(!head) return;
 
-    detroyTrie(head->left);
-    detroyTrie(head->middle);
-    detroyTrie(head->right);
+    destroyTrie(head->left);
+    destroyTrie(head->middle);
+    destroyTrie(head->right);
     free(head);
 }
