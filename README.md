@@ -1,2 +1,0 @@
-# programming techniques 1
-
