@@ -16,7 +16,7 @@ Node* initTrie(void){
     return NULL;
 }
 
-Node* newNode(char newLetter, bool isEnd){
+static Node* newNode(char newLetter, bool isEnd){
     Node* newNode = malloc(sizeof(Node));
     if(!newNode) return NULL;
 
@@ -26,8 +26,8 @@ Node* newNode(char newLetter, bool isEnd){
     return newNode;
 }
 
-void insertWord(Node* head, char* word, size_t index){
-    if(!word) return;
+Node* insertWord(Node* head, char* word, size_t index){
+    if(!word) return head;
     
     char newLetter = word[index];
     if(!head){
@@ -38,9 +38,9 @@ void insertWord(Node* head, char* word, size_t index){
         }
     }
     if(!head)
-        return;
+        return head;
     if(newLetter == '\0')
-        return;
+        return head;
 
     if(newLetter < head->letter)
         head->left = insertWord(head->left, word, index);
@@ -49,7 +49,7 @@ void insertWord(Node* head, char* word, size_t index){
     if(newLetter == head->letter)
         head->middle = insertWord(head->middle, word, ++index);
 
-    return;  
+    return head;  
 }
 
 bool isWordInTrie(Node* head, char* word, size_t index){
@@ -57,7 +57,7 @@ bool isWordInTrie(Node* head, char* word, size_t index){
         return false;
     
     char letter = word[index];
-    if('\0' == letter == head->letter || (word[index+1] == '\0' && head->isEndOfWord && word[index] == head->letter))
+    if((('\0' == letter) && ('\0'== head->letter)) || (word[index+1] == '\0' && head->isEndOfWord && word[index] == head->letter))
         return true;
 
     if(letter < head->letter){
