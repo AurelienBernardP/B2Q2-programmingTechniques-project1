@@ -3,7 +3,7 @@
 
 
 #include"board.h"//name to be changed
-#include"tries.c"
+#include"tries.h"
 
 const size_t MAX_CHAR_PER_SQR = 10;
 const size_t MAX_CHAR_PER_LINE = 200;

@@ -15,11 +15,11 @@ clean:
 
 main: main.o board.o dictionary.o tries.o
 	$(LD) -o $@ $^ $(LDFLAGS)
-
-dictionary: dictionary.o tries.o
+	
+tries: tries.o
 	$(LD) -o $@ $^ $(LDFLAGS)
 
-tries: tries.o IOHandler.o Matrix.o
+dictionary: dictionary.o tries.o
 	$(LD) -o $@ $^ $(LDFLAGS)
 
 board: board.o tries.o
