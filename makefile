@@ -3,7 +3,7 @@ LD=gcc
 CFLAGS=--std=c99 --pedantic -Wall -W -Wmissing-prototypes -DNDEBUG
 LDFLAGS=-lm
 
-all: main tries dictionary board
+all: main tries dictionary grid
 
 .c .o:
 	$(CC) -c $(CFLAGS) -o $@ $<
@@ -13,7 +13,7 @@ all: main tries dictionary board
 clean:
 	rm -f *.o
 
-main: main.o board.o dictionary.o tries.o
+main: main.o grid.o dictionary.o tries.o
 	$(LD) -o $@ $^ $(LDFLAGS)
 	
 tries: tries.o
@@ -22,5 +22,5 @@ tries: tries.o
 dictionary: dictionary.o tries.o
 	$(LD) -o $@ $^ $(LDFLAGS)
 
-board: board.o tries.o
+grid: grid.o tries.o
 	$(LD) -o $@ $^ $(LDFLAGS)
