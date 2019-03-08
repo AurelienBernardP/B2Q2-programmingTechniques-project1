@@ -13,6 +13,13 @@ int main(int argc, char** argv){
     
     Node* dictionary = initDictionary(argv[1]);
     if(!dictionary) return EXIT_FAILURE;
+    char tmpWord[200] = {'\0'};
+    FILE* fp = fopen("newDico.txt", "w");
+    printTrie(dictionary, tmpWord, 200, 0, fp);
+    fclose(fp);
+    printf("%d\n",isWordInTrie(dictionary, "IBIS", 0));
+    printf("%d\n",isWordInTrie(dictionary, "IBISS", 0));
+    printf("%d\n",isWordInTrie(dictionary, "KAKI", 0));
 
     destroyTrie(dictionary);
 

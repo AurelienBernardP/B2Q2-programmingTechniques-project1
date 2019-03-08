@@ -4,7 +4,6 @@
 
 #include "tries.h"
 
-
 struct node_t{
     char letter;
     bool isEndOfWord;
@@ -20,6 +19,7 @@ Node* initTrie(void){
 char obtLetter(Node* node){
     return node->right->letter;
 }
+
 /*
 void printTrie(Node* head, char* word){
     if(!head) return;
@@ -58,17 +58,18 @@ void printTrie(Node* head, char* word, size_t wordSize, size_t index, FILE* stre
     if(head->middle != NULL){
         word[index] = head->letter;
         //if we find the end of a word(ie, null char of true in the endOfWord field), we print the word in the filestream
-        if(head->isEndOfWord || head->middle->letter == '\0'){
+        if( head->isEndOfWord){
             fprintf(stream, "%s\n",word);
         }
         //word is printed in the filestream
-        
-        printTrie(head->middle, word, wordSize, ++index, stream);// we DO put the letter in the word and get to the middle;
-        for(size_t i = index; word[i] != '\0' && i < wordSize ; i++){
+        ++index;
+        printTrie(head->middle, word, wordSize, index, stream);// we DO put the letter in the word and get to the middle;
+        index--;
+        for(size_t i = index; /*word[i] != '\0' &&*/ i < wordSize ; i++){
             word[i] = '\0';
         }
-    }
 
+    }
     if(head->right != NULL){
         printTrie(head->right, word, wordSize, index, stream);// we DO NOT put the letter in the word and get to the left;
         for(size_t i = index; word[i] != '\0' && i < wordSize ; i++){
@@ -76,7 +77,7 @@ void printTrie(Node* head, char* word, size_t wordSize, size_t index, FILE* stre
         }
     }
 
-return;
+    return;
 }
 
 static Node* newNode(char newLetter, bool isEnd){
@@ -93,22 +94,25 @@ Node* insertWord(Node* head, char* word, size_t index){
     if(!word) return head;
 
     char newLetter = word[index];
+    if(newLetter == '\n')
+        newLetter == '\0';
+
     if(!head){
             head = newNode(newLetter, false);
     }
-    if(word[index+1] == '\0'){
+    if(word[index+1] == '\n'){
         head->isEndOfWord = true;
     }
     if(!head || newLetter == '\0')
         return head;
-
+    
     if(newLetter < head->letter) // on va a chaque fois verifier les 3 conditions -> à changer
         head->left = insertWord(head->left, word, index);
     if(newLetter > head->letter)
         head->right = insertWord(head->right, word, index);
     if(newLetter == head->letter)
         head->middle = insertWord(head->middle, word, ++index);
-    
+
     return head;
 }
 
