@@ -12,7 +12,7 @@ char obtLetter(Node* node);
 
 Node* insertWord(Node* head, char* word, size_t index);
 
-void printTrie(Node* head);
+//void printTrie(Node* head);
 
 bool isWordInTrie(Node* head, char* word, size_t index);
 

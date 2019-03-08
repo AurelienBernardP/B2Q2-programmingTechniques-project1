@@ -20,7 +20,7 @@ Node* initTrie(void){
 char obtLetter(Node* node){
     return node->right->letter;
 }
-
+/*
 void printTrie(Node* head, char* word){
     if(!head) return;
 
@@ -40,7 +40,7 @@ void printTrie(Node* head, char* word){
     if(!head->right)
         printTrie(head->right);
 }
-
+*/
 static Node* newNode(char newLetter, bool isEnd){
     Node* newNode = malloc(sizeof(Node));
     if(!newNode) return NULL;
@@ -56,11 +56,13 @@ Node* insertWord(Node* head, char* word, size_t index){
 
     char newLetter = word[index];
     if(!head){
-        if(word[index+1] == '\0')
+        if(word[index+1] == '\0'){
             head = newNode(newLetter, true);
-        else
+        }else{
             head = newNode(newLetter, false);
+        }
     }
+
     if(!head || newLetter == '\0')
         return head;
 
@@ -70,7 +72,7 @@ Node* insertWord(Node* head, char* word, size_t index){
         head->right = insertWord(head->right, word, index);
     if(newLetter == head->letter)
         head->middle = insertWord(head->middle, word, ++index);
-
+    
     return head;
 }
 
