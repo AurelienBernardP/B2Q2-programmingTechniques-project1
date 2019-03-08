@@ -8,7 +8,11 @@ typedef struct node_t Node;
 
 Node* initTrie(void);
 
+char obtLetter(Node* node);
+
 Node* insertWord(Node* head, char* word, size_t index);
+
+void printTrie(Node* head);
 
 bool isWordInTrie(Node* head, char* word, size_t index);
 
