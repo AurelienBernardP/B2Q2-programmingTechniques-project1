@@ -41,6 +41,44 @@ void printTrie(Node* head, char* word){
         printTrie(head->right);
 }
 */
+
+void printTrie(Node* head, char* word, size_t wordSize, size_t index, FILE* stream){
+    if(!stream || !word || wordSize < index){
+        fprintf(stderr, "Error uninitialized arguments or word too long");
+        return;
+    }
+
+    if(head->left != NULL){
+        printTrie(head->left, word, wordSize, index, stream);// we DO NOT put the letter in the word and get to the left;
+        for(size_t i = index; word[i] != '\0' && i < wordSize ; i++){
+            word[i] = '\0';
+        }
+    }
+
+    if(head->middle != NULL){
+        word[index] = head->letter;
+        //if we find the end of a word(ie, null char of true in the endOfWord field), we print the word in the filestream
+        if(head->isEndOfWord || head->middle->letter == '\0'){
+            fprintf(stream, "%s\n",word);
+        }
+        //word is printed in the filestream
+        
+        printTrie(head->middle, word, wordSize, ++index, stream);// we DO put the letter in the word and get to the middle;
+        for(size_t i = index; word[i] != '\0' && i < wordSize ; i++){
+            word[i] = '\0';
+        }
+    }
+
+    if(head->right != NULL){
+        printTrie(head->right, word, wordSize, index, stream);// we DO NOT put the letter in the word and get to the left;
+        for(size_t i = index; word[i] != '\0' && i < wordSize ; i++){
+            word[i] = '\0';
+        }
+    }
+
+return;
+}
+
 static Node* newNode(char newLetter, bool isEnd){
     Node* newNode = malloc(sizeof(Node));
     if(!newNode) return NULL;
@@ -56,13 +94,11 @@ Node* insertWord(Node* head, char* word, size_t index){
 
     char newLetter = word[index];
     if(!head){
-        if(word[index+1] == '\0'){
-            head = newNode(newLetter, true);
-        }else{
             head = newNode(newLetter, false);
-        }
     }
-
+    if(word[index+1] == '\0'){
+        head->isEndOfWord = true;
+    }
     if(!head || newLetter == '\0')
         return head;
 
