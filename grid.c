@@ -17,6 +17,45 @@ const size_t MAX_CHAR_PER_LINE = 200;
 static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
                                                 bool* isVisited, char* word);
 
+static Grid* allocGrid(size_t gridSize){
+    // allocation of the structure and matrix
+    Grid* newGrid = malloc(sizeof(Grid));
+    if(!newGrid){
+        printf("Error during memory allocation\n");
+        return NULL;
+    }
+
+    newGrid->size = gridSize;
+    newGrid->found = initTrie();
+    newGrid->puzzle = malloc(newGrid->size * sizeof(char**));
+    if(!newGrid->puzzle){
+        printf("Error during memory allocation\n");
+        free(newGrid);
+        return NULL;
+    }
+
+    for(size_t i = 0; i< newGrid->size; i++){
+        newGrid->puzzle[i] = malloc(newGrid->size * sizeof(char*));
+        if(!newGrid->puzzle[i]){
+            printf("Error during memory allocation\n");
+            destroyGrid(newGrid);
+            return NULL;
+        }
+        for(size_t j = 0; j<newGrid->size; j++){
+            newGrid->puzzle[i][j] = malloc(MAX_CHAR_PER_SQR * sizeof(char));// array of char in each element of the matrix
+            if(!newGrid->puzzle[i][j]){
+                printf("Error during memory allocation\n");
+                destroyGrid(newGrid);
+                return NULL;
+            }
+        }
+
+    return newGrid;
+    }
+    //end memory allocation
+
+}
+
 Grid* initGrid(char* path){
     if (!path){
         printf("Error transmiting file name\n");
@@ -30,61 +69,39 @@ Grid* initGrid(char* path){
     }
 
     ///begin the count of elements in the grid by counting the spaces
-    char* firstLine = calloc(MAX_CHAR_PER_LINE, sizeof(char));
-    if(!firstLine){
+    char* fileLine = calloc(MAX_CHAR_PER_LINE, sizeof(char));
+    if(!fileLine){
         printf("error allocating memmory\n");
         return NULL;
     }
-    fgets(firstLine,MAX_CHAR_PER_LINE,fp);
+    fgets(fileLine,MAX_CHAR_PER_LINE,fp);
     
     size_t gridSize = 1;// 1 as there is no space before the first element;
-    for(size_t i = 0; firstLine[i] != '\n' && i < MAX_CHAR_PER_LINE; i++){
-        if(firstLine[i] == ' ')
+    for(size_t i = 0; fileLine[i] != '\n' && i < MAX_CHAR_PER_LINE; i++){
+        if(fileLine[i] == ' ')
             gridSize++;
     }
-    free(firstLine);
     // end of counting number of elements, stored in GridSize
 
-    // allocation of the structure and matrix
-    Grid* newGrid = malloc(sizeof(Grid));
-    if(!newGrid){
-        printf("Error during memory allocation\n");
+    Grid* grid = allocGrid(gridSize);
+    if(!grid){
         fclose(fp);
+        free(fileLine);
         return NULL;
     }
 
-    newGrid->size = gridSize;
-    newGrid->found = initTrie();
-    newGrid->puzzle = malloc(newGrid->size * sizeof(char**));
-    if(!newGrid->puzzle){
-        printf("Error during memory allocation\n");
-        free(newGrid);
-        fclose(fp);
-        return NULL;
-    }
 
-    for(size_t i = 0; i< newGrid->size; i++){
-        newGrid->puzzle[i] = malloc(newGrid->size * sizeof(char*));
-        if(!newGrid->puzzle[i]){
-            printf("Error during memory allocation\n");
-            destroyGrid(newGrid);
-            fclose(fp);
-            return NULL;
-        }
-        for(size_t j = 0; j<newGrid->size; j++){
-            newGrid->puzzle[i][j] = malloc(MAX_CHAR_PER_SQR * sizeof(char));// array of char in each element of the matrix
-            if(!newGrid->puzzle[i][j]){
-                printf("Error during memory allocation\n");
-                destroyGrid(newGrid);
-                fclose(fp);
-                return NULL;
-            }
-        }
+    for(size_t i = 0; i < gridSize; i++){
+        for(size_t j = 0; j < gridSize; j++)
+            grid->puzzle[i][j] = string();
+        fgets(fileLine,MAX_CHAR_PER_LINE,fp);
     }
-    //end memory allocation
+    
 
     fclose(fp);
-    return newGrid;// success
+    free(fileLine);
+
+    return grid;// success
 }
 
 void destroyGrid(Grid* grid){
