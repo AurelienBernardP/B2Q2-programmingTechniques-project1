@@ -9,15 +9,15 @@
 
 
 #define NB_MAX_CHAR 10
-#define LONGEST_WORD 200
+#define LONGEST_WORD_DICT 200
 
 const size_t MAX_CHAR_PER_SQR = 10;
 const size_t MAX_CHAR_PER_LINE = 200;
 
 static Grid* allocGrid(size_t gridSize);
 
-//static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
-//                                                bool* isVisited, char* word);
+static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
+                                             bool* isVisited, char* word);
 
 
 static Grid* allocGrid(size_t gridSize){
@@ -135,72 +135,83 @@ void destroyGrid(Grid* grid){
     return;
 }
 
-/*
 static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
                                                 bool* isVisited, char* word){
 
-    isVisited[line + col] = true;
-    if(isWordInTrie(dict, word, 0))
-        grid->found = insertWord(grid->found, word, 0);//insert en void ?
+    isVisited[(line * grid->size) + col] = true;
+    printf("%s %u\n",word,isWordInTrie(dict,word,0));
+    if(isWordInTrie(dict, word, 0)){
+        grid->found = insertWord(grid->found, word, 0);
+        printf("Insert of %s\n",word);
+    }
     
     //Gauche
     if(col > 0 && !isVisited[(line*grid->size)+col-1]){
-        //Need biggest length of aword
-        findAllWords(grid, dict, line, col-1, isVisited, (strcat(word, grid->puzzle[line][col-1])));
-        char* tmp = word[strlen(word)-strlen(grid->puzzle[line][col-1])];//Does that work ?
-        tmp = 0;
+        printf("Gauche\n");
+        findAllWordsAux(grid, dict, line, col-1, isVisited, (strcat(word, grid->puzzle[line][col-1])));
+        printf("word avant: %s\n",word);
+        for(size_t i = 0; i < strlen(grid->puzzle[line][col-1]); i++)
+            word[strlen(word)-1] = '\0';
+        
+        printf("word après: %s - %s\n",word,grid->puzzle[line][col-1]);
         isVisited[(line*grid->size)+col-1] = false;
     }
 
 
     //Droite
     if(col < grid->size-1 && !isVisited[(line*grid->size)+col+1]){
-        findAllWords(grid, dict, line, col+1, isVisited, strcat(word, grid->puzzle[line][col+1]));
-        char* tmp = word[strlen(word)-strlen(grid->puzzle[line][col+1])];//Does that work ?
-        tmp = 0;
+        printf("Droite\n");
+        findAllWordsAux(grid, dict, line, col+1, isVisited, strcat(word, grid->puzzle[line][col+1]));
+        for(size_t i = 0; i < strlen(grid->puzzle[line][col+1]); i++)
+            word[strlen(word)-1] = '\0';
         isVisited[(line*grid->size)+col+1] = false;
     }
 
     //haut
     if(line > 0 && !isVisited[((line-1)*grid->size)+col]){
-        findAllWords(grid, dict, line-1, col, isVisited, strcat(word, grid->puzzle[line-1][col]));
-        char* tmp = word[strlen(word)-strlen(grid->puzzle[line-1][col])];//Does that work ?
-        tmp = 0;
+        findAllWordsAux(grid, dict, line-1, col, isVisited, strcat(word, grid->puzzle[line-1][col]));
+        for(size_t i = 0; i < strlen(grid->puzzle[line-1][col]); i++)
+            word[strlen(word)-1] = '\0';
         isVisited[((line-1)*grid->size)+col] = false;
         //Diag haut droit
         if(col < grid->size-1 && !isVisited[((line-1)*grid->size)+col+1]){
-            findAllWords(grid, dict, line-1, col+1, isVisited, strcat(word, grid->puzzle[line-1][col+1]));
-            char* tmp = word[strlen(word)-strlen(grid->puzzle[line-1][col+1])];//Does that work ?
-            tmp = 0;
+            printf("Haut Droite\n");
+            findAllWordsAux(grid, dict, line-1, col+1, isVisited, strcat(word, grid->puzzle[line-1][col+1]));
+            for(size_t i = 0; i < strlen(grid->puzzle[line-1][col+1]); i++)
+                word[strlen(word)-1] = '\0';
             isVisited[((line-1)*grid->size)+col+1] = false;
         }
         //Diag haut gauche
         if(col > 0 && !isVisited[((line-1)*grid->size)+col-1]){
-            findAllWords(grid, dict, line-1, col-1, isVisited, strcat(word, grid->puzzle[line-1][col-1]));
-            char* tmp = word[strlen(word)-strlen(grid->puzzle[line-1][col-1])];//Does that work ?
-            tmp = 0;
+            printf("Haut Gauche\n");
+            findAllWordsAux(grid, dict, line-1, col-1, isVisited, strcat(word, grid->puzzle[line-1][col-1]));
+            for(size_t i = 0; i < strlen(grid->puzzle[line-1][col-1]); i++)
+                word[strlen(word)-1] = '\0';
             isVisited[((line-1)*grid->size)+col-1] = false;
         }
     }
 
     //bas
     if(line < grid->size-1 && !isVisited[((line+1)*grid->size)+col]){
-        findAllWords(grid, dict, line+1, col, isVisited, strcat(word, grid->puzzle[line+1][col]));
-        char* tmp = word[strlen(word)-strlen(grid->puzzle[line+1][col])];//Does that work ?
-        tmp = 0;
+        printf("Bas\n");
+        findAllWordsAux(grid, dict, line+1, col, isVisited, strcat(word, grid->puzzle[line+1][col]));
+        for(size_t i = 0; i < strlen(grid->puzzle[line+1][col]); i++)
+            word[strlen(word)-1] = '\0';
         isVisited[((line+1)*grid->size)+col] = false;
         //Diag bas droit
         if(col < grid->size-1 && !isVisited[((line+1)*grid->size)+col+1]){
-            findAllWords(grid, dict, line+1, col+1, isVisited, strcat(word, grid->puzzle[line+1][col+1]));
-            char* tmp = word[strlen(word)-strlen(grid->puzzle[line+1][col+1])];//Does that work ?
-            tmp = 0;
+            printf("Bas Droit\n");
+            findAllWordsAux(grid, dict, line+1, col+1, isVisited, strcat(word, grid->puzzle[line+1][col+1]));
+            for(size_t i = 0; i < strlen(grid->puzzle[line+1][col+1]); i++)
+                word[strlen(word)-1] = '\0';
             isVisited[((line+1)*grid->size)+col+1] = false;
         }
-        //Diag haut gauche
+        //Diag bas gauche
         if(col > 0 && !isVisited[((line+1)*grid->size)+col-1]){
-            findAllWords(grid, dict, line+1, col-1, isVisited, strcat(word, grid->puzzle[line-1][col-1]));
-            char* tmp = word[strlen(word)-strlen(grid->puzzle[line+1][col-1])];//Does that work ?
-            tmp = 0;
+            printf("Bas Gauche\n");
+            findAllWordsAux(grid, dict, line+1, col-1, isVisited, strcat(word, grid->puzzle[line+1][col-1]));
+            for(size_t i = 0; i < strlen(grid->puzzle[line+1][col-1]); i++)
+                word[strlen(word)-1] = '\0';
             isVisited[((line+1)*grid->size)+col-1] = false;
         }
     }
@@ -209,22 +220,23 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
 
 void findAllWords(Grid* grid, Node* dict){
     if(!grid || !dict){
-        printf("Error: Grid or dictionnary empty!\n");
-        return NULL;
+        printf("Error findAllWords: Grid or dictionnary empty!\n");
+        return;
     }
 
-    bool* isVisited = calloc(grid->size, bool);
+    bool* isVisited = calloc(grid->size * grid->size, sizeof(bool));
     if(!isVisited){
         printf("Error: Allocation failed!\n");
-        return NULL;
+        return;
     }
 
-    char word[LONGEST_WORD]; 
+    char word[LONGEST_WORD_DICT]; 
 
-    for(size_t i=0; i < grid->size; i++)
+    for(size_t i=0; i < grid->size; i++){
         for(size_t j=0; j < grid->size; j++){
             findAllWordsAux(grid, dict, i, j, isVisited, strcat(word,grid->puzzle[i][j]));
+            printf("Case %lu %lu \n",i, j);
+        }
     }
-    
+    return;
 }
-*/
