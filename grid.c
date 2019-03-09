@@ -1,6 +1,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<stdbool.h>
+#include<string.h>
 
 #include"grid.h"
 #include"tries.h"
@@ -13,9 +14,11 @@
 const size_t MAX_CHAR_PER_SQR = 10;
 const size_t MAX_CHAR_PER_LINE = 200;
 
+static Grid* allocGrid(size_t gridSize);
 
-static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
-                                                bool* isVisited, char* word);
+//static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
+//                                                bool* isVisited, char* word);
+
 
 static Grid* allocGrid(size_t gridSize){
     // allocation of the structure and matrix
@@ -34,7 +37,7 @@ static Grid* allocGrid(size_t gridSize){
         return NULL;
     }
 
-    for(size_t i = 0; i< newGrid->size; i++){
+    for(size_t i = 0; i < newGrid->size; i++){
         newGrid->puzzle[i] = malloc(newGrid->size * sizeof(char*));
         if(!newGrid->puzzle[i]){
             printf("Error during memory allocation\n");
@@ -48,11 +51,14 @@ static Grid* allocGrid(size_t gridSize){
                 destroyGrid(newGrid);
                 return NULL;
             }
+        
         }
 
-    return newGrid;
+
     }
     //end memory allocation
+
+    return newGrid;
 
 }
 
@@ -75,14 +81,15 @@ Grid* initGrid(char* path){
         return NULL;
     }
     fgets(fileLine,MAX_CHAR_PER_LINE,fp);
-    
+
     size_t gridSize = 1;// 1 as there is no space before the first element;
     for(size_t i = 0; fileLine[i] != '\n' && i < MAX_CHAR_PER_LINE; i++){
         if(fileLine[i] == ' ')
             gridSize++;
     }
     // end of counting number of elements, stored in GridSize
-
+    
+    //Allocation of memory for the grid
     Grid* grid = allocGrid(gridSize);
     if(!grid){
         fclose(fp);
@@ -90,13 +97,17 @@ Grid* initGrid(char* path){
         return NULL;
     }
 
+    const char delim[2] = " ";
 
-    for(size_t i = 0; i < gridSize; i++){
-        for(size_t j = 0; j < gridSize; j++)
-            grid->puzzle[i][j] = string();
+    //Initialisation of the grid based on the file
+    for(size_t i = 0; i < gridSize ; i++){
+        grid->puzzle[i][0] = strcpy(grid->puzzle[i][0], strtok(fileLine,delim));
+        for(size_t j = 1; j < gridSize; j++){
+            grid->puzzle[i][j] = strcpy(grid->puzzle[i][j], strtok(NULL,delim));
+        }
         fgets(fileLine,MAX_CHAR_PER_LINE,fp);
     }
-    
+
 
     fclose(fp);
     free(fileLine);
@@ -124,6 +135,7 @@ void destroyGrid(Grid* grid){
     return;
 }
 
+/*
 static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
                                                 bool* isVisited, char* word){
 
@@ -215,3 +227,4 @@ void findAllWords(Grid* grid, Node* dict){
     }
     
 }
+*/
