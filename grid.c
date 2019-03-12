@@ -101,6 +101,9 @@ Grid* initGrid(char* path){
 
     //Initialisation of the grid based on the file
     for(size_t i = 0; i < gridSize ; i++){
+        //To avoid EOL
+        fileLine[strlen(fileLine)-1] = 0;
+
         grid->puzzle[i][0] = strcpy(grid->puzzle[i][0], strtok(fileLine,delim));
         for(size_t j = 1; j < gridSize; j++){
             grid->puzzle[i][j] = strcpy(grid->puzzle[i][j], strtok(NULL,delim));
@@ -149,11 +152,9 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
     if(col > 0 && !isVisited[(line*grid->size)+col-1]){
         printf("Gauche\n");
         findAllWordsAux(grid, dict, line, col-1, isVisited, (strcat(word, grid->puzzle[line][col-1])));
-        printf("word avant: %s\n",word);
         for(size_t i = 0; i < strlen(grid->puzzle[line][col-1]); i++)
             word[strlen(word)-1] = '\0';
         
-        printf("word après: %s - %s\n",word,grid->puzzle[line][col-1]);
         isVisited[(line*grid->size)+col-1] = false;
     }
 
@@ -169,6 +170,7 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
 
     //haut
     if(line > 0 && !isVisited[((line-1)*grid->size)+col]){
+        printf("Haut\n");
         findAllWordsAux(grid, dict, line-1, col, isVisited, strcat(word, grid->puzzle[line-1][col]));
         for(size_t i = 0; i < strlen(grid->puzzle[line-1][col]); i++)
             word[strlen(word)-1] = '\0';
