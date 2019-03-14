@@ -138,82 +138,81 @@ void destroyGrid(Grid* grid){
     return;
 }
 
+static void deleteSuffixe(char* word, char* suffix){
+    if(!word || suffix[0] == '#')
+        return;
+    
+    size_t  n = strlen(suffix);
+    for(size_t i = 0; i < n; i++)
+        word[strlen(word)-1] = '\0';
+    
+    return;
+}
+
 static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
                                                 bool* isVisited, char* word){
 
+    if(word[strlen(word)-2] == '#'){
+        printf("Yas\n");
+        word[strlen(word)-2] = '\0';
+    }
+
     isVisited[(line * grid->size) + col] = true;
-    printf("%s %u\n",word,isWordInTrie(dict,word,0));
-    if(isWordInTrie(dict, word, 0)){
+    if(isWordInTrie(dict, word, 0) && !isWordInTrie(grid->found, word, 0)){
         grid->found = insertWord(grid->found, word, 0);
-        printf("Insert of %s\n",word);
+        printf("Insert of %s et %u \n",word, isWordInTrie(grid->found, word, 0));
     }
     
     //Gauche
     if(col > 0 && !isVisited[(line*grid->size)+col-1]){
-        printf("Gauche\n");
         findAllWordsAux(grid, dict, line, col-1, isVisited, (strcat(word, grid->puzzle[line][col-1])));
-        for(size_t i = 0; i < strlen(grid->puzzle[line][col-1]); i++)
-            word[strlen(word)-1] = '\0';
-        
+        deleteSuffixe(word, grid->puzzle[line][col-1]);
         isVisited[(line*grid->size)+col-1] = false;
     }
 
 
     //Droite
     if(col < grid->size-1 && !isVisited[(line*grid->size)+col+1]){
-        printf("Droite\n");
         findAllWordsAux(grid, dict, line, col+1, isVisited, strcat(word, grid->puzzle[line][col+1]));
-        for(size_t i = 0; i < strlen(grid->puzzle[line][col+1]); i++)
-            word[strlen(word)-1] = '\0';
+        deleteSuffixe(word, grid->puzzle[line][col+1]);
         isVisited[(line*grid->size)+col+1] = false;
     }
 
     //haut
     if(line > 0 && !isVisited[((line-1)*grid->size)+col]){
-        printf("Haut\n");
         findAllWordsAux(grid, dict, line-1, col, isVisited, strcat(word, grid->puzzle[line-1][col]));
-        for(size_t i = 0; i < strlen(grid->puzzle[line-1][col]); i++)
-            word[strlen(word)-1] = '\0';
+        deleteSuffixe(word, grid->puzzle[line-1][col]);
+
         isVisited[((line-1)*grid->size)+col] = false;
         //Diag haut droit
         if(col < grid->size-1 && !isVisited[((line-1)*grid->size)+col+1]){
-            printf("Haut Droite\n");
             findAllWordsAux(grid, dict, line-1, col+1, isVisited, strcat(word, grid->puzzle[line-1][col+1]));
-            for(size_t i = 0; i < strlen(grid->puzzle[line-1][col+1]); i++)
-                word[strlen(word)-1] = '\0';
+            deleteSuffixe(word, grid->puzzle[line-1][col+1]);
             isVisited[((line-1)*grid->size)+col+1] = false;
         }
         //Diag haut gauche
         if(col > 0 && !isVisited[((line-1)*grid->size)+col-1]){
-            printf("Haut Gauche\n");
             findAllWordsAux(grid, dict, line-1, col-1, isVisited, strcat(word, grid->puzzle[line-1][col-1]));
-            for(size_t i = 0; i < strlen(grid->puzzle[line-1][col-1]); i++)
-                word[strlen(word)-1] = '\0';
+            deleteSuffixe(word, grid->puzzle[line-1][col-1]);
             isVisited[((line-1)*grid->size)+col-1] = false;
         }
     }
 
     //bas
     if(line < grid->size-1 && !isVisited[((line+1)*grid->size)+col]){
-        printf("Bas\n");
         findAllWordsAux(grid, dict, line+1, col, isVisited, strcat(word, grid->puzzle[line+1][col]));
-        for(size_t i = 0; i < strlen(grid->puzzle[line+1][col]); i++)
-            word[strlen(word)-1] = '\0';
+        deleteSuffixe(word, grid->puzzle[line+1][col]);
         isVisited[((line+1)*grid->size)+col] = false;
         //Diag bas droit
         if(col < grid->size-1 && !isVisited[((line+1)*grid->size)+col+1]){
-            printf("Bas Droit\n");
             findAllWordsAux(grid, dict, line+1, col+1, isVisited, strcat(word, grid->puzzle[line+1][col+1]));
-            for(size_t i = 0; i < strlen(grid->puzzle[line+1][col+1]); i++)
-                word[strlen(word)-1] = '\0';
+            deleteSuffixe(word, grid->puzzle[line+1][col+1]);
             isVisited[((line+1)*grid->size)+col+1] = false;
         }
         //Diag bas gauche
         if(col > 0 && !isVisited[((line+1)*grid->size)+col-1]){
-            printf("Bas Gauche\n");
             findAllWordsAux(grid, dict, line+1, col-1, isVisited, strcat(word, grid->puzzle[line+1][col-1]));
-            for(size_t i = 0; i < strlen(grid->puzzle[line+1][col-1]); i++)
-                word[strlen(word)-1] = '\0';
+            deleteSuffixe(word, grid->puzzle[line+1][col-1]);
             isVisited[((line+1)*grid->size)+col-1] = false;
         }
     }
@@ -236,8 +235,8 @@ void findAllWords(Grid* grid, Node* dict){
 
     for(size_t i=0; i < grid->size; i++){
         for(size_t j=0; j < grid->size; j++){
-            findAllWordsAux(grid, dict, i, j, isVisited, strcat(word,grid->puzzle[i][j]));
-            printf("Case %lu %lu \n",i, j);
+            if(grid->puzzle[i][j][0] != '#')
+                findAllWordsAux(grid, dict, i, j, isVisited, strcat(word,grid->puzzle[i][j]));
         }
     }
     return;
