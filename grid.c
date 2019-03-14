@@ -19,7 +19,7 @@ static Grid* allocGrid(size_t gridSize);
 static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
                                              bool* isVisited, char* word);
 
-
+//Allocation du grid selon la taille de la grille du fichier
 static Grid* allocGrid(size_t gridSize){
     // allocation of the structure and matrix
     Grid* newGrid = malloc(sizeof(Grid));
@@ -62,6 +62,8 @@ static Grid* allocGrid(size_t gridSize){
 
 }
 
+
+//Lis le fichier contenant la grille, alloue la grille et l'initialise
 Grid* initGrid(char* path){
     if (!path){
         printf("Error transmiting file name\n");
@@ -138,6 +140,7 @@ void destroyGrid(Grid* grid){
     return;
 }
 
+//Supprime le suffixe d'une chaine de charateres (enleve les x derniers charactères du string)
 static void deleteSuffixe(char* word, char* suffix){
     if(!word || suffix[0] == '#')
         return;
@@ -220,6 +223,8 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
 
 }
 
+//Parcours la grille et le dictionaire pour créer un nouveau Trie contenant
+// tous les mots possibles de la grille qui sont dans le dictionnaire
 void findAllWords(Grid* grid, Node* dict){
     if(!grid || !dict){
         printf("Error findAllWords: Grid or dictionnary empty!\n");
