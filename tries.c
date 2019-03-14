@@ -20,28 +20,6 @@ char obtLetter(Node* node){
     return node->right->letter;
 }
 
-/*
-void printTrie(Node* head, char* word){
-    if(!head) return;
-
-    if(!head->left)
-        printTrie(head->left);
-    if(!head->middle){
-        if(head->letter == '\0'){
-            printf("%s\n", word);
-            printTrie(head->middle,word);
-        }else{
-            printTrie(head->middle, (strcat(word, grid->puzzle[line][col-1])));
-        char* tmp = word[strlen(word)-strlen(grid->puzzle[line][col-1])];//Does that work ?
-        tmp = 0;
-    
-        }
-    }
-    if(!head->right)
-        printTrie(head->right);
-}
-*/
-
 void printTrie(Node* head, char* word, size_t wordSize, size_t index, FILE* stream){
     if(!stream || !word || wordSize < index){
         fprintf(stderr, "Error uninitialized arguments or word too long");
@@ -72,7 +50,7 @@ void printTrie(Node* head, char* word, size_t wordSize, size_t index, FILE* stre
     }
     if(head->right != NULL){
         printTrie(head->right, word, wordSize, index, stream);// we DO NOT put the letter in the word and get to the left;
-        for(size_t i = index; word[i] != '\0' && i < wordSize ; i++){
+        for(size_t i = index; /*word[i] != '\0' &&*/ i < wordSize ; i++){
             word[i] = '\0';
         }
     }
@@ -103,8 +81,9 @@ Node* insertWord(Node* head, char* word, size_t index){
     if(word[index+1] == '\n'){
         head->isEndOfWord = true;
     }
+
     if(!head || newLetter == '\0')
-        return head;
+        return NULL;
     
     if(newLetter < head->letter) // on va a chaque fois verifier les 3 conditions -> à changer
         head->left = insertWord(head->left, word, index);
