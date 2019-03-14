@@ -49,7 +49,7 @@ int main(int argc, char** argv){
     testDico(dictionary, argv[1]);
     FILE* fp = fopen("newDico.txt","w");
     printTrie(dictionary, tmpWord, 200, 0, fp);
-    printf("is word in trie %d\n",isWordInTrie(dictionary,"AAC", 0));
+    printf("is word in trie %d\n",isWordInTrie(dictionary,"AA", 0));
 
 
     destroyTrie(dictionary);

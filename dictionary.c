@@ -16,7 +16,7 @@ Node* initDictionary(char* path){
     }
 
     Node* head = initTrie();
-    char word[LONGEST_WORD_SIZE];
+    char word[200] = {'\0'};
 
     while(fgets(word, LONGEST_WORD_SIZE ,fp) != NULL)
         head = insertWord(head, word, 0);
