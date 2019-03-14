@@ -78,12 +78,14 @@ Node* insertWord(Node* head, char* word, size_t index){
     if(!head){
             head = newNode(newLetter, false);
     }
-    if(word[index+1] == '\n'){
+    if(word[index+1] == '\n' || word[index+1] == '\0'){
         head->isEndOfWord = true;
     }
 
-    if(!head || newLetter == '\0')
+    if(!head || newLetter == '\0'){
+        destroyTrie(head);
         return NULL;
+    }
     
     if(newLetter < head->letter) // on va a chaque fois verifier les 3 conditions -> à changer
         head->left = insertWord(head->left, word, index);
