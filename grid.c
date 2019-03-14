@@ -152,15 +152,14 @@ static void deleteSuffixe(char* word, char* suffix){
 static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
                                                 bool* isVisited, char* word){
 
-    if(word[strlen(word)-2] == '#'){
-        printf("Yas\n");
-        word[strlen(word)-2] = '\0';
+    if(word[strlen(word)-1] == '#'){
+        word[strlen(word)-1] = '\0';
     }
 
     isVisited[(line * grid->size) + col] = true;
     if(isWordInTrie(dict, word, 0) && !isWordInTrie(grid->found, word, 0)){
         grid->found = insertWord(grid->found, word, 0);
-        printf("Insert of %s et %u \n",word, isWordInTrie(grid->found, word, 0));
+        printf("Insert of %s \n",word);
     }
     
     //Gauche
@@ -178,12 +177,13 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
         isVisited[(line*grid->size)+col+1] = false;
     }
 
-    //haut
-    if(line > 0 && !isVisited[((line-1)*grid->size)+col]){
+    if(line > 0){ 
+        //haut
+        if(!isVisited[((line-1)*grid->size)+col]){
         findAllWordsAux(grid, dict, line-1, col, isVisited, strcat(word, grid->puzzle[line-1][col]));
         deleteSuffixe(word, grid->puzzle[line-1][col]);
-
         isVisited[((line-1)*grid->size)+col] = false;
+        }
         //Diag haut droit
         if(col < grid->size-1 && !isVisited[((line-1)*grid->size)+col+1]){
             findAllWordsAux(grid, dict, line-1, col+1, isVisited, strcat(word, grid->puzzle[line-1][col+1]));
@@ -199,7 +199,8 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
     }
 
     //bas
-    if(line < grid->size-1 && !isVisited[((line+1)*grid->size)+col]){
+    if(line < grid->size-1)
+        if(!isVisited[((line+1)*grid->size)+col]){
         findAllWordsAux(grid, dict, line+1, col, isVisited, strcat(word, grid->puzzle[line+1][col]));
         deleteSuffixe(word, grid->puzzle[line+1][col]);
         isVisited[((line+1)*grid->size)+col] = false;
@@ -231,13 +232,15 @@ void findAllWords(Grid* grid, Node* dict){
         return;
     }
 
-    char word[LONGEST_WORD_DICT]; 
-
+    char* word = malloc(sizeof(char) * LONGEST_WORD_DICT);
+    if(!word) return;
+    
     for(size_t i=0; i < grid->size; i++){
         for(size_t j=0; j < grid->size; j++){
             if(grid->puzzle[i][j][0] != '#')
                 findAllWordsAux(grid, dict, i, j, isVisited, strcat(word,grid->puzzle[i][j]));
         }
     }
+
     return;
 }
