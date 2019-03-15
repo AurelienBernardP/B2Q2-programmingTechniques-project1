@@ -48,8 +48,8 @@ int main(int argc, char** argv){
     char tmpWord[200] = {'\0'};
     testDico(dictionary, argv[1]);
     FILE* fp = fopen("newDico.txt","w");
-    printTrie(dictionary, tmpWord, 200, 0, fp);
-    printf("is word in trie %d\n",isWordInTrie(dictionary,"AA", 0));
+    printTrie(dictionary, fp);
+    printf("is word in trie %d\n",isWordInTrie(dictionary,"AA"));
 
 
     destroyTrie(dictionary);
