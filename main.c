@@ -16,6 +16,8 @@ int main(int argc, char** argv){
     if(!dictionary) return EXIT_FAILURE;
 
     Grid* grid = initGrid(argv[2]);
+    grid->found = insertWord(grid->found, "yaasss",0);
+    printf("is word yass in %d\n", isWordInTrie(grid->found, "yaasss", 0));
     if(!grid) return EXIT_FAILURE;
 
     findAllWords(grid,dictionary);
@@ -31,5 +33,6 @@ int main(int argc, char** argv){
 
     destroyTrie(dictionary);
     destroyGrid(grid);
+    
     return EXIT_SUCCESS;
 }
