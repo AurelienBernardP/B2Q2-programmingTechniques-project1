@@ -16,7 +16,7 @@ const size_t MAX_CHAR_PER_LINE = 200;
 
 static Grid* allocGrid(size_t gridSize);
 
-static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
+static void findAllWordsAux(Grid* grid, Root* dict, size_t line, size_t col,
                                              bool* isVisited, char* word);
 
 //Allocation du grid selon la taille de la grille du fichier
@@ -29,7 +29,11 @@ static Grid* allocGrid(size_t gridSize){
     }
 
     newGrid->size = gridSize;
-    newGrid->found = initTrie();
+    newGrid->found = initRoot();
+    if(!newGrid->found){
+        free(newGrid);
+        return NULL;
+    }
     newGrid->puzzle = malloc(newGrid->size * sizeof(char**));
     if(!newGrid->puzzle){
         printf("Error during memory allocation\n");
@@ -79,7 +83,7 @@ Grid* initGrid(char* path){
     ///begin the count of elements in the grid by counting the spaces
     char* fileLine = calloc(MAX_CHAR_PER_LINE, sizeof(char));
     if(!fileLine){
-        printf("error allocating memmory\n");
+        printf("error allocating memory\n");
         return NULL;
     }
     fgets(fileLine,MAX_CHAR_PER_LINE,fp);
@@ -152,7 +156,7 @@ static void deleteSuffixe(char* word, char* suffix){
     return;
 }
 
-static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
+static void findAllWordsAux(Grid* grid, Root* dict, size_t line, size_t col,
                                                 bool* isVisited, char* word){
 
     if(word[strlen(word)-1] == '#'){
@@ -161,7 +165,7 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
 
     isVisited[(line * grid->size) + col] = true;
     if(isWordInTrie(dict, word) && !isWordInTrie(grid->found, word)){
-        grid->found = insertWord(grid->found, word);
+        insertWord(grid->found, word);
         printf("Insert of %s \n",word);
     }
     
@@ -171,7 +175,6 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
         deleteSuffixe(word, grid->puzzle[line][col-1]);
         isVisited[(line*grid->size)+col-1] = false;
     }
-
 
     //Droite
     if(col < grid->size-1 && !isVisited[(line*grid->size)+col+1]){
@@ -225,7 +228,7 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
 
 //Parcours la grille et le dictionaire pour créer un nouveau Trie contenant
 // tous les mots possibles de la grille qui sont dans le dictionnaire
-void findAllWords(Grid* grid, Node* dict){
+void findAllWords(Grid* grid, Root* dict){
     if(!grid || !dict){
         printf("Error findAllWords: Grid or dictionnary empty!\n");
         return;

@@ -4,7 +4,7 @@
 #include "dictionary.h"
 
 
-void testDico(Node* dico, char* path){
+void testDico(Root* dico, char* path){
     if(!dico || !path){
         printf("error");
         return;
@@ -23,7 +23,7 @@ void testDico(Node* dico, char* path){
                 word[i] = '\0';
         }
         words++;
-        if(isWordInTrie){
+        if(isWordInTrie(dico, word)){
             hit++;
         }else{
             miss++;
@@ -43,16 +43,17 @@ int main(int argc, char** argv){
         return EXIT_FAILURE;
     }
     
-    Node* dictionary = initDictionary(argv[1]);
+    Root* dictionary = initDictionary(argv[1]);
     if(!dictionary) return EXIT_FAILURE;
-    char tmpWord[200] = {'\0'};
     testDico(dictionary, argv[1]);
+
     FILE* fp = fopen("newDico.txt","w");
+    
     printTrie(dictionary, fp);
     printf("is word in trie %d\n",isWordInTrie(dictionary,"AA"));
 
 
-    destroyTrie(dictionary);
+    destroyFromRoot(dictionary);
 
     return EXIT_SUCCESS;
 }

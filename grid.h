@@ -5,13 +5,13 @@
 typedef struct{
     char* **puzzle;// matrix of pointers to char arrays
     size_t size;
-    Node* found;
+    Root* found;
 }Grid;// name to be changed
 
 Grid* initGrid(char* path);
 
 void destroyGrid(Grid* grid);
 
-void findAllWords(Grid* grid, Node* dict);
+void findAllWords(Grid* grid, Root* dict);
 
 #endif

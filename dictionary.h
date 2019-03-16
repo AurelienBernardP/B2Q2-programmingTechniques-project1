@@ -22,6 +22,6 @@
  * Use example:
  *       Node* NewDictionaryName = initDico("DictionaryPath");
  * ------------------------------------------------------------------------- */
-Node* initDictionary(char* path);
+Root* initDictionary(char* path);
 
 #endif 

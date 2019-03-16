@@ -12,7 +12,7 @@ int main(int argc, char** argv){
         return EXIT_FAILURE;
     }
 */
-    Node* dictionary = initDictionary("tmp_dico.txt");
+    Root* dictionary = initDictionary("tmp_dico.txt");
     if(!dictionary) return EXIT_FAILURE;
 
     Grid* grid = initGrid("tmp_grid.txt");
@@ -20,16 +20,11 @@ int main(int argc, char** argv){
 
     findAllWords(grid,dictionary);
 
-    char tmpWord[200] = {'\0'};
-    FILE* fp = fopen("newDico.txt", "w");
-    if(!fp){
-        printf("File can't be opened.\n");
-        return EXIT_FAILURE;
-    }
-    printTrie(grid->found, fp);
-    fclose(fp);
 
-    destroyTrie(dictionary);
+    printTrie(grid->found, stdout);
+
+
+    destroyFromRoot(dictionary);
     destroyGrid(grid);
     
     return EXIT_SUCCESS;

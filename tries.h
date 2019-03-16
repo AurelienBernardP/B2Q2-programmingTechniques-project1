@@ -11,44 +11,46 @@
 
 /* Opaque Structure */
 typedef struct node_t Node;
+/* Opaque Structure */
+typedef struct root_t Root;
 
 /* ------------------------------------------------------------------------- *
  * Creates a new empty Ternary Search Trie (TST)object.
  *
  * PARAMETERS
- * Void, no parameters
+ *  Void, no parameters
  *
  * RETURN
- * Node pointer to a new TSt
+ *  Root pointer to a new TST on success
+ *  NULL pointer on failure
  *
  * USE:
- * 
- *      Node* TSTNAME = initTrie();
+ *      Root* TSTNAME = initRoot();
  * ------------------------------------------------------------------------- */
-Node* initTrie(void);
+Root* initRoot(void);
 
 /* ------------------------------------------------------------------------- *
  * Inserts a word in an previously created TST.
  *
  * PARAMETERS
- * head : Node pointer to the root of the peviously created TST
+ * Root : Root pointer to the root of the previously created TST
  * word : The word to be inserted.
  *         !! The format of the word must be a character array with '\n' or '\0'
- *            as a end of word charachter !!
+ *            as a end of word character !!
  * 
  * RETURN
- * Node pointer to the TST with the new word inserted.
+ * void, the word will be inserted on success,
  *
  * USE:
- *       PreviouslyCreatedTSTPointer = insertWord(PreviouslyCreatedTSTPointer, word);
+ *       i
  * ------------------------------------------------------------------------- */
-Node* insertWord(Node* head, char* word);
+void insertWord(Root* root, char* word);
 
 /* ------------------------------------------------------------------------- *
  * Prints all the words in lower case contained in a TST, into the wanted file stream.
  *
  * PARAMETERS
- * head : Node pointer to the root of the peviously created TST
+ * head : Node pointer to the root of the previously created TST
  * stream : Pointer to a valid file stream, standard or previously opened in write("w") mode
  * 
  * RETURN
@@ -57,35 +59,35 @@ Node* insertWord(Node* head, char* word);
  * USE: with for example the standard outpout file stream
  *       printTrie(PreviouslyCreatedTSTPointer, stdout);
  * ------------------------------------------------------------------------- */
-void printTrie(Node* head, FILE* stream);
+void printTrie(Root* root, FILE* stream);
 
 /* ------------------------------------------------------------------------- *
  * Lookup for a word in a previously created TST. 
  *
  * PARAMETERS
- * head : Node pointer to the root of the peviously created TST
+ * root : Root pointer to the root of the previously created TST
  * word : The word to be looked up.
  *         !! The format of the word must be a character array with '\n' or '\0'
- *            as a end of word charachter !!
+ *            as a end of word character !!
  * RETURN
  * 0 if the word is NOT in the TST
  * 1 if the word IS in the TST
  *
  * ------------------------------------------------------------------------- */
-bool isWordInTrie(Node* head, char* word);
+bool isWordInTrie(Root* root, char* word);
 
 /* ------------------------------------------------------------------------- *
  * Frees all the cells in the previously created TST.
  *
  * PARAMETERS
- * head : Node pointer to the root of the peviously created TST
+ * root : Root pointer to the root of the previously created TST
  * 
  * RETURN
  * void, the TST is destroyed
  *
  * USE: 
- *       destroyTrie(PreviouslyCreatedTSTPointer);
+ *       destroyFromRoot(PreviouslyCreatedTSTPointer);
  * ------------------------------------------------------------------------- */
-void destroyTrie(Node* head);
+void destroyFromRoot(Root* root);
 
 #endif

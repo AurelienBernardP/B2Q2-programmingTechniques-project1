@@ -6,7 +6,7 @@
 
 const size_t LONGEST_WORD_SIZE = 200;
 
-Node* initDictionary(char* path){
+Root* initDictionary(char* path){
     if(!path) return NULL;
 
     FILE* fp = fopen(path, "r");
@@ -15,12 +15,12 @@ Node* initDictionary(char* path){
         return NULL;
     }
 
-    Node* head = initTrie();
+    Root* root = initRoot();
     char word[200] = {'\0'};
 
     while(fgets(word, LONGEST_WORD_SIZE ,fp) != NULL)
-        head = insertWord(head, word);
+        insertWord(root, word);
 
     fclose(fp);
-    return head;
+    return root;
 }
