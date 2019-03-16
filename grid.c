@@ -160,8 +160,8 @@ static void findAllWordsAux(Grid* grid, Node* dict, size_t line, size_t col,
     }
 
     isVisited[(line * grid->size) + col] = true;
-    if(isWordInTrie(dict, word, 0) && !isWordInTrie(grid->found, word, 0)){
-        grid->found = insertWord(grid->found, word, 0);
+    if(isWordInTrie(dict, word) && !isWordInTrie(grid->found, word)){
+        grid->found = insertWord(grid->found, word);
         printf("Insert of %s \n",word);
     }
     
