@@ -159,6 +159,8 @@ static void deleteSuffixe(char* word, char* suffix){
 static void findAllWordsAux(Grid* grid, Root* dict, size_t line, size_t col,
                                                 bool* isVisited, char* word){
 
+    if(!strcmp(word, "A"))
+        printf("YAAAAAS\n");
     if(word[strlen(word)-1] == '#'){
         word[strlen(word)-1] = '\0';
     }
@@ -245,10 +247,14 @@ void findAllWords(Grid* grid, Root* dict){
     
     for(size_t i=0; i < grid->size; i++){
         for(size_t j=0; j < grid->size; j++){
-            if(grid->puzzle[i][j][0] != '#')
+            if(grid->puzzle[i][j][0] != '#'){
                 findAllWordsAux(grid, dict, i, j, isVisited, strcat(word,grid->puzzle[i][j]));
+                isVisited[(i * grid->size) + j] = false;
+            }
+            deleteSuffixe(word, grid->puzzle[i][j]);
         }
     }
-
+    
+    printf("yo\n");
     return;
 }
