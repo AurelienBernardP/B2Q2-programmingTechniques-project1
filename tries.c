@@ -63,16 +63,13 @@ Root* initRoot(void){
     return newRoot;
 }
 
-
-
 /*********************
  * printTrieHelper
  * Helper function to the printTrie function defined in this module;
  * 
  * *******************/
 static void printTrieHelper(Node* head, char* word, size_t wordSize, size_t index, FILE* stream){
-    if(!stream || !word || wordSize < index){
-        fprintf(stderr, "Error uninitialized arguments or word too long");
+    if(!stream || !word || wordSize < index || !head){
         return;
     }
 
@@ -99,12 +96,23 @@ static void printTrieHelper(Node* head, char* word, size_t wordSize, size_t inde
 void printTrie(Root* root, FILE* stream){
     if(!root || !stream) return;// unapropriate arguments
 
+    bool isRootEmpty = true;
+    for(size_t i = 0; i< LETTERS_IN_ALPHABET; i++){
+        if(root->roots[i] != NULL)
+            isRootEmpty = false;
+    }
+
+    if(isRootEmpty){
+        fprintf(stderr, "ERROR");
+        return;
+    }
+    
     char tmpWord[MAX_WORD];
-    for(size_t i = 0; i < LETTERS_IN_ALPHABET; i++)
+    for(size_t i = 0; i < LETTERS_IN_ALPHABET; i++){
         printTrieHelper(root->roots[i], tmpWord, MAX_WORD, 0, stream);
+    }
     return;
 }
-
 
 static Node* newNode(char newLetter, bool isEnd){
     Node* newNode = malloc(sizeof(Node));
@@ -163,14 +171,16 @@ void insertWord(Root* root, char* word){
  * Helper function to the isWordInTrie function defined in this module;
  * 
  * *******************/
-static bool isWordInTrieHelper(Node* head, char* word, size_t index){
+static unsigned int isWordInTrieHelper(Node* head, char* word, size_t index){
     if(!head || !word)
-        return false;
+        return 0;//false
     
     char letter = tolower(word[index]);
     if((('\0' == letter) && ('\0'== head->letter)) || (word[index+1] == '\0' && head->isEndOfWord && letter == head->letter))
-        return true;
-
+        return 1;//true
+    if(!head->right && !head->middle && !head->left)
+        return 2;// this value means that there are no words with this prefix
+    
     if(letter < head->letter){
         return isWordInTrieHelper(head->left, word, index);
     }
@@ -180,10 +190,10 @@ static bool isWordInTrieHelper(Node* head, char* word, size_t index){
     if(letter == head->letter){
         return isWordInTrieHelper(head->middle, word, ++index);
     }
-return true;///will never reach this condition
+return 1;///will never reach this condition
 }
 
-bool isWordInTrie(Root* root, char* word){
+unsigned int isWordInTrie(Root* root, char* word){
     if(!root || !word || word[0] < 'A'){ // arguments are not formated correctly 
         return false;
     }

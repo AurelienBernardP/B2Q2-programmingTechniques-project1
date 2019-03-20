@@ -72,9 +72,10 @@ void printTrie(Root* root, FILE* stream);
  * RETURN
  * 0 if the word is NOT in the TST
  * 1 if the word IS in the TST
+ * 2 if the there are no words with a given prefix
  *
  * ------------------------------------------------------------------------- */
-bool isWordInTrie(Root* root, char* word);
+unsigned int isWordInTrie(Root* root, char* word);
 
 /* ------------------------------------------------------------------------- *
  * Frees all the cells in the previously created TST.

@@ -13,7 +13,10 @@ all: main tries dictionary
 clean:
 	rm -f *.o
 
-main: main.o grid.o dictionary.o tries.o
+test: test_is_word_in_trie.o tries.o dictionary.o
+	$(LD) -o $@ $^ $(LDFLAGS)
+
+solver: main.o grid.o dictionary.o tries.o
 	$(LD) -o $@ $^ $(LDFLAGS)
 	
 tries: tries.o
