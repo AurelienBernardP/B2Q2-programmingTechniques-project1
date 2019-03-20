@@ -2,6 +2,8 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<string.h>
+#include <time.h>
+
 
 #include"grid.h"
 #include"tries.h"
@@ -159,17 +161,18 @@ static void deleteSuffixe(char* word, char* suffix){
 static void findAllWordsAux(Grid* grid, Root* dict, size_t line, size_t col,
                                                 bool* isVisited, char* word){
 
-    if(!strcmp(word, "A"))
-        printf("YAAAAAS\n");
-    if(word[strlen(word)-1] == '#'){
+    if(word[strlen(word)-1] == '#')
         word[strlen(word)-1] = '\0';
-    }
 
     isVisited[(line * grid->size) + col] = true;
-    if(isWordInTrie(dict, word) && !isWordInTrie(grid->found, word)){
-        insertWord(grid->found, word);
-        printf("Insert of %s \n",word);
-    }
+
+
+    unsigned int result = isWordInTrie(dict, word);
+    if(result == 1)
+        if(!isWordInTrie(grid->found, word))
+                insertWord(grid->found, word);
+    if(result == 2)
+        return;
     
     //Gauche
     if(col > 0 && !isVisited[(line*grid->size)+col-1]){
@@ -244,7 +247,10 @@ void findAllWords(Grid* grid, Root* dict){
 
     char* word = malloc(sizeof(char) * LONGEST_WORD_DICT);
     if(!word) return;
-    
+
+    clock_t start, end;
+    double cpu_time_used;
+    start = clock();
     for(size_t i=0; i < grid->size; i++){
         for(size_t j=0; j < grid->size; j++){
             if(grid->puzzle[i][j][0] != '#'){
@@ -254,7 +260,9 @@ void findAllWords(Grid* grid, Root* dict){
             deleteSuffixe(word, grid->puzzle[i][j]);
         }
     }
+    end = clock();
+    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+    printf("Temps pour findAllwordsAux %lf\n", cpu_time_used);
     
-    printf("yo\n");
     return;
 }
