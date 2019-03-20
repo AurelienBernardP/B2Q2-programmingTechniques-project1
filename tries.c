@@ -175,7 +175,7 @@ static unsigned int isWordInTrieHelper(Node* head, char* word, size_t index){
     if(!head)
         return 2;//false
     if(!word)
-        return 1;
+        return 0;
     
     char letter = word[index];
     if((('\0' == letter) && ('\0'== head->letter)) || (word[index+1] == '\0' && head->isEndOfWord && letter == head->letter))
