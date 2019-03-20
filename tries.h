@@ -55,6 +55,7 @@ void insertWord(Root* root, char* word);
  * 
  * RETURN
  * void, the word will be printed in the file stream.
+ * Prints ERROR in stderr file stream if the trie is empty
  *
  * USE: with for example the standard outpout file stream
  *       printTrie(PreviouslyCreatedTSTPointer, stdout);
