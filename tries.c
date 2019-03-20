@@ -172,12 +172,17 @@ void insertWord(Root* root, char* word){
  * 
  * *******************/
 static unsigned int isWordInTrieHelper(Node* head, char* word, size_t index){
-    if(!head || !word)
-        return 0;//false
+    if(!head)
+        return 2;//false
+    if(!word)
+        return 1;
     
     char letter = word[index];
     if((('\0' == letter) && ('\0'== head->letter)) || (word[index+1] == '\0' && head->isEndOfWord && letter == head->letter))
         return 1;//true
+    if(letter == '\0' && !head->left)
+        return 0;
+
     if(!head->right && !head->middle && !head->left)
         return 2;// this value means that there are no words with this prefix
     
