@@ -3,7 +3,7 @@ LD=gcc
 CFLAGS=--std=c99 --pedantic -Wall -W -Wmissing-prototypes -DNDEBUG
 LDFLAGS=-lm
 
-all: solver tries dictionary
+all: solver
 
 .c .o:
 	$(CC) -c $(CFLAGS) -o $@ $<
