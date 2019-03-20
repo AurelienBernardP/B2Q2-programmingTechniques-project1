@@ -106,7 +106,7 @@ void printTrie(Root* root, FILE* stream){
         fprintf(stderr, "ERROR");
         return;
     }
-    
+
     char tmpWord[MAX_WORD];
     for(size_t i = 0; i < LETTERS_IN_ALPHABET; i++){
         printTrieHelper(root->roots[i], tmpWord, MAX_WORD, 0, stream);
@@ -132,7 +132,7 @@ static Node* newNode(char newLetter, bool isEnd){
 static Node* insertWordHelper(Node* head, char* word, size_t index){
     if(!word) return head;
 
-    char newLetter = tolower(word[index]);
+    char newLetter = word[index];
     if(newLetter == '\n')
         newLetter = '\0';
 
@@ -175,7 +175,7 @@ static unsigned int isWordInTrieHelper(Node* head, char* word, size_t index){
     if(!head || !word)
         return 0;//false
     
-    char letter = tolower(word[index]);
+    char letter = word[index];
     if((('\0' == letter) && ('\0'== head->letter)) || (word[index+1] == '\0' && head->isEndOfWord && letter == head->letter))
         return 1;//true
     if(!head->right && !head->middle && !head->left)
