@@ -21,7 +21,7 @@ typedef struct root_t Root;
  *  Void, no parameters
  *
  * RETURN
- *  Root pointer to a new TST on success
+ *  root pointer to a new TST on success
  *  NULL pointer on failure
  *
  * USE:
