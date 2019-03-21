@@ -12,13 +12,13 @@
 *  Search Trie.
 *
 *  FIELDS :
-*     - puzzle: Grid of characters
+*     - grid: Grid of characters
 *     - size: The size of the grid
 *     - wordsFound:  A Ternary Search Trie containing all the words possible from
                 the grid that are in a dictionary.
 --------------------------------------------------------------------*/
 struct grid_t{
-    char* **puzzle;
+    char* **grid;
     size_t size;
     Root* wordsFound;
 };
@@ -91,22 +91,22 @@ static Grid* allocGrid(size_t gridSize){
     }
 
     //Allocating the matrix of string which represents the grid
-    newGrid->puzzle = malloc(newGrid->size * sizeof(char**));
-    if(!newGrid->puzzle){
+    newGrid->grid = malloc(newGrid->size * sizeof(char**));
+    if(!newGrid->grid){
         printf("Error during memory allocation\n");
         free(newGrid);
         return NULL;
     }
     for(size_t i = 0; i < newGrid->size; i++){
-        newGrid->puzzle[i] = malloc(newGrid->size * sizeof(char*));
-        if(!newGrid->puzzle[i]){
+        newGrid->grid[i] = malloc(newGrid->size * sizeof(char*));
+        if(!newGrid->grid[i]){
             printf("Error during memory allocation\n");
             destroyGrid(newGrid);
             return NULL;
         }
         for(size_t j = 0; j<newGrid->size; j++){
-            newGrid->puzzle[i][j] = malloc(MAX_CHAR_PER_SQR * sizeof(char));// array of char in each element of the matrix
-            if(!newGrid->puzzle[i][j]){
+            newGrid->grid[i][j] = malloc(MAX_CHAR_PER_SQR * sizeof(char));// array of char in each element of the matrix
+            if(!newGrid->grid[i][j]){
                 printf("Error during memory allocation\n");
                 destroyGrid(newGrid);
                 return NULL;
@@ -136,7 +136,7 @@ Grid* initGrid(char* path){
         return NULL;
     }
 
-    ///begin the count of elements in the grid by counting the spaces
+    ///Calculate the number of elements in the grid by counting the spaces
     char* fileLine = calloc(MAX_CHAR_PER_LINE, sizeof(char));
     if(!fileLine){
         printf("error allocating memory\n");
@@ -159,20 +159,15 @@ Grid* initGrid(char* path){
         return NULL;
     }
 
-    const char delim[2] = " ";
+    const char delim[2] = " ";//Delimitation between each cell in the grid
 
     //Initialisation of the grid based on the file
     for(size_t i = 0; i < gridSize ; i++){
-        //To avoid EOL
-        fileLine[strlen(fileLine)-1] = 0;
-
-        grid->puzzle[i][0] = strcpy(grid->puzzle[i][0], strtok(fileLine,delim));
-        for(size_t j = 1; j < gridSize; j++){
-            grid->puzzle[i][j] = strcpy(grid->puzzle[i][j], strtok(NULL,delim));
-        }
+        grid->grid[i][0] = strcpy(grid->grid[i][0], strtok(fileLine,delim));
+        for(size_t j = 1; j < gridSize; j++)
+            grid->grid[i][j] = strcpy(grid->grid[i][j], strtok(NULL,delim));
         fgets(fileLine,MAX_CHAR_PER_LINE,fp);
     }
-
 
     fclose(fp);
     free(fileLine);
@@ -185,18 +180,19 @@ void destroyGrid(Grid* grid){
     if(!grid)
         return;
 
-    if(grid->puzzle != NULL){
+    if(grid->grid != NULL){
         for(size_t i = 0; i< grid->size; i++){
-            if(grid->puzzle[i] != NULL){
+            if(grid->grid[i] != NULL){
                 for(size_t j = 0; j<grid->size; j++){
-                    if(grid->puzzle[i][j] != NULL)
-                        free(grid->puzzle[i][j]);// the MAX_CHAR_PER_SQR char vectors (char*)
+                    if(grid->grid[i][j] != NULL)
+                        free(grid->grid[i][j]);// the MAX_CHAR_PER_SQR char vectors
                 }
-                free(grid->puzzle[i]);//the pointer to the arrays of char vector pointers (char**)
+                free(grid->grid[i]);//the pointer to the arrays of char vector pointers
             }
         }
-        free(grid->puzzle);// (char ***)
+        free(grid->grid);
     }
+    //destroyTrie(grid->wordsFound);
     free(grid);
     return;
 }
@@ -204,6 +200,12 @@ void destroyGrid(Grid* grid){
 static char* addSuffix(char* word, char* suffix){
     if(!suffix || suffix[0] == '#')
         return word;
+
+    //Check if the suffixe can be added in the word
+    if(((int)MAX_CHAR_PER_LINE - (int)(strlen(word) + strlen(suffix)) < 0)){
+        printf("Error addSuffix: the word has reached its size limit!\n");
+        return word;
+    }
 
     //Adding the suffix
     size_t n = strlen(suffix);
@@ -241,60 +243,60 @@ static void findAllWordsHelper(Grid* grid, Root* dict, size_t line, size_t col,
             return;
     }
 
-    //Check if the left square exists and if it has already been visited
+    //Check if the left cell exists and if it has already been visited
     if(col > 0 && !isVisited[(line*grid->size)+col-1]){
-        findAllWordsHelper(grid, dict, line, col-1, isVisited, addSuffix(word, grid->puzzle[line][col-1]));
-        deleteSuffix(word, grid->puzzle[line][col-1]);
+        findAllWordsHelper(grid, dict, line, col-1, isVisited, addSuffix(word, grid->grid[line][col-1]));
+        deleteSuffix(word, grid->grid[line][col-1]);
         isVisited[(line*grid->size)+col-1] = false;
     }
 
-    //Check if the right square exists and if it has already been visited
+    //Check if the right cell exists and if it has already been visited
     if(col < grid->size-1 && !isVisited[(line*grid->size)+col+1]){
-        findAllWordsHelper(grid, dict, line, col+1, isVisited, addSuffix(word, grid->puzzle[line][col+1]));
-        deleteSuffix(word, grid->puzzle[line][col+1]);
+        findAllWordsHelper(grid, dict, line, col+1, isVisited, addSuffix(word, grid->grid[line][col+1]));
+        deleteSuffix(word, grid->grid[line][col+1]);
         isVisited[(line*grid->size)+col+1] = false;
     }
 
-    //Check if the upper square exists
+    //Check if the upper cell exists
     if(line > 0){ 
-        //Check if the upper square has already been visited
+        //Check if the upper cell has already been visited
         if(!isVisited[((line-1)*grid->size)+col]){
-            indAllWordsHelper(grid, dict, line-1, col, isVisited, addSuffix(word, grid->puzzle[line-1][col]));
-            deleteSuffix(word, grid->puzzle[line-1][col]);
+            findAllWordsHelper(grid, dict, line-1, col, isVisited, addSuffix(word, grid->grid[line-1][col]));
+            deleteSuffix(word, grid->grid[line-1][col]);
             isVisited[((line-1)*grid->size)+col] = false;
         }
-        //Check if the upper right square exists and if it has already been visited
+        //Check if the upper right cell exists and if it has already been visited
         if(col < grid->size-1 && !isVisited[((line-1)*grid->size)+col+1]){
-            findAllWordsHelper(grid, dict, line-1, col+1, isVisited, addSuffix(word, grid->puzzle[line-1][col+1]));
-            deleteSuffix(word, grid->puzzle[line-1][col+1]);
+            findAllWordsHelper(grid, dict, line-1, col+1, isVisited, addSuffix(word, grid->grid[line-1][col+1]));
+            deleteSuffix(word, grid->grid[line-1][col+1]);
             isVisited[((line-1)*grid->size)+col+1] = false;
         }
-        //Check if the upper left square exists and if it has already been visited
+        //Check if the upper left cell exists and if it has already been visited
         if(col > 0 && !isVisited[((line-1)*grid->size)+col-1]){
-            findAllWordsHelper(grid, dict, line-1, col-1, isVisited, addSuffix(word, grid->puzzle[line-1][col-1]));
-            deleteSuffix(word, grid->puzzle[line-1][col-1]);
+            findAllWordsHelper(grid, dict, line-1, col-1, isVisited, addSuffix(word, grid->grid[line-1][col-1]));
+            deleteSuffix(word, grid->grid[line-1][col-1]);
             isVisited[((line-1)*grid->size)+col-1] = false;
         }
     }
 
-    //Check if the lower square exists
+    //Check if the lower cell exists
     if(line < grid->size-1){
-        //Check if the lower square has already been visited
+        //Check if the lower cell has already been visited
         if(!isVisited[((line+1)*grid->size)+col]){
-            findAllWordsHelper(grid, dict, line+1, col, isVisited, addSuffix(word, grid->puzzle[line+1][col]));
-            deleteSuffix(word, grid->puzzle[line+1][col]);
+            findAllWordsHelper(grid, dict, line+1, col, isVisited, addSuffix(word, grid->grid[line+1][col]));
+            deleteSuffix(word, grid->grid[line+1][col]);
             isVisited[((line+1)*grid->size)+col] = false;
         }
-        //Check if the lower right square exists and if it has already been visited
+        //Check if the lower right cell exists and if it has already been visited
         if(col < grid->size-1 && !isVisited[((line+1)*grid->size)+col+1]){
-            findAllWordsHelper(grid, dict, line+1, col+1, isVisited, addSuffix(word, grid->puzzle[line+1][col+1]));
-            deleteSuffix(word, grid->puzzle[line+1][col+1]);
+            findAllWordsHelper(grid, dict, line+1, col+1, isVisited, addSuffix(word, grid->grid[line+1][col+1]));
+            deleteSuffix(word, grid->grid[line+1][col+1]);
             isVisited[((line+1)*grid->size)+col+1] = false;
         }
-        //Check if the lower left square exists and if it has already been visited
+        //Check if the lower left cell exists and if it has already been visited
         if(col > 0 && !isVisited[((line+1)*grid->size)+col-1]){
-            findAllWordsHelper(grid, dict, line+1, col-1, isVisited, addSuffix(word, grid->puzzle[line+1][col-1]));
-            deleteSuffix(word, grid->puzzle[line+1][col-1]);
+            findAllWordsHelper(grid, dict, line+1, col-1, isVisited, addSuffix(word, grid->grid[line+1][col-1]));
+            deleteSuffix(word, grid->grid[line+1][col-1]);
             isVisited[((line+1)*grid->size)+col-1] = false;
         }
     }
@@ -321,11 +323,11 @@ void findAllWords(Grid* grid, Root* dict){
     //Going through the whole grid to found all the possible words from the gird
     for(size_t i=0; i < grid->size; i++){
         for(size_t j=0; j < grid->size; j++){
-            if(grid->puzzle[i][j][0] != '#'){
-                findAllWordsHelper(grid, dict, i, j, isVisited, addSuffix(word,grid->puzzle[i][j]));
+            if(grid->grid[i][j][0] != '#'){
+                findAllWordsHelper(grid, dict, i, j, isVisited, addSuffix(word,grid->grid[i][j]));
                 isVisited[(i * grid->size) + j] = false;
             }
-            deleteSuffix(word, grid->puzzle[i][j]);
+            deleteSuffix(word, grid->grid[i][j]);
         }
     }
     
