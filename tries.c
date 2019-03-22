@@ -24,7 +24,13 @@ struct node_t{
     Node* right;
     Node* middle; 
 };
-
+/*-------------------------------------------------------------------
+*  STRUCTURE root_t:
+*  This structure represents a root node of a Ternary Search Trie.
+*
+*  FIELDS :
+*     - roots : array of TST's (Node structure's)
+--------------------------------------------------------------------*/
 struct root_t{
     Node** roots;
 };
@@ -93,8 +99,12 @@ static void printTrieHelper(Node* head, char* word, size_t wordSize, size_t inde
     }
     return;
 }
+
 void printTrie(Root* root, FILE* stream){
-    if(!root || !stream) return;// unapropriate arguments
+    if(!root || !stream){
+        fprintf(stderr,"Unvalid root pointer or unvalid filestream used to print trie\n");
+        return;// unapropriate arguments
+    }
 
     bool isRootEmpty = true;
     for(size_t i = 0; i< LETTERS_IN_ALPHABET; i++){
@@ -103,7 +113,7 @@ void printTrie(Root* root, FILE* stream){
     }
 
     if(isRootEmpty){
-        fprintf(stderr, "ERROR");
+        fprintf(stderr, "ERROR\n");
         return;
     }
 
@@ -140,6 +150,7 @@ static Node* insertWordHelper(Node* head, char* word, size_t index){
             head = newNode(newLetter, false);
     }
     if(!head){
+        // error in neNOde mem allocation
         return head;
     }
     
@@ -156,6 +167,7 @@ static Node* insertWordHelper(Node* head, char* word, size_t index){
     }
     return head;
 }
+
 void insertWord(Root* root, char* word){
     if(!root || !word || word[0] < 'A') // arguments are not formated correctly 
         return;
@@ -173,15 +185,15 @@ void insertWord(Root* root, char* word){
  * *******************/
 static unsigned int isWordInTrieHelper(Node* head, char* word, size_t index){
     if(!head)
-        return 2;//false
+        return 2;// this value means that there are no words with this prefix
     if(!word)
-        return 0;
+        return 0;// false
     
     char letter = word[index];
     if((('\0' == letter) && ('\0'== head->letter)) || (word[index+1] == '\0' && head->isEndOfWord && letter == head->letter))
-        return 1;//true
+        return 1;//true, word has been found
     if(letter == '\0' && !head->left)
-        return 0;
+        return 0;// false, as the char '\0' is the smalles value charachter if there are no left child it means the word is not in the trie
 
     if(!head->right && !head->middle && !head->left)
         return 2;// this value means that there are no words with this prefix
@@ -195,14 +207,17 @@ static unsigned int isWordInTrieHelper(Node* head, char* word, size_t index){
     if(letter == head->letter){
         return isWordInTrieHelper(head->middle, word, ++index);
     }
-return 1;///will never reach this condition
+
+    return 1;///will never reach this condition
 }
 
 unsigned int isWordInTrie(Root* root, char* word){
     if(!root || !word || word[0] < 'A'){ // arguments are not formated correctly 
+        fprintf(stderr, "could not parse looked up word, unvalid format\n");
         return false;
     }
-    size_t indexOfRoot = tolower(word[0]) - 'a';//compute the branch of the root in which the word could be
+
+    size_t indexOfRoot = tolower(word[0]) - 'a';//compute the branch of the root in which the word should be
     return isWordInTrieHelper(root->roots[indexOfRoot], word, 0);
 }
 

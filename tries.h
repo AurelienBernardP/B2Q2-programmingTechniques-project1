@@ -6,7 +6,6 @@
 #ifndef __TRIES_HANDLER__
 #define __TRIES_HANDLER__
 
-#include <stdbool.h>
 #include <stdlib.h>
 
 /* Opaque Structure */
@@ -69,7 +68,7 @@ void printTrie(Root* root, FILE* stream);
  * root : Root pointer to the root of the previously created TST
  * word : The word to be looked up.
  *         !! The format of the word must be a character array with '\n' or '\0'
- *            as a end of word character !!
+ *            as the end of word character !!
  * RETURN
  * 0 if the word is NOT in the TST
  * 1 if the word IS in the TST
@@ -79,7 +78,7 @@ void printTrie(Root* root, FILE* stream);
 unsigned int isWordInTrie(Root* root, char* word);
 
 /* ------------------------------------------------------------------------- *
- * Frees all the cells in the previously created TST.
+ * Frees all the cells and root in the previously created TST.
  *
  * PARAMETERS
  * root : Root pointer to the root of the previously created TST
