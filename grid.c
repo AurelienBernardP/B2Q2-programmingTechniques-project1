@@ -320,9 +320,10 @@ void findAllWords(Grid* grid, Root* dict){
         return;
     }
 
-    //Going through the whole grid to found all the possible words from the gird
+    //Each cell of the grid is given as the origin of the word
     for(size_t i=0; i < grid->size; i++){
         for(size_t j=0; j < grid->size; j++){
+            //If the cell is an obstacle, it can't be an origin
             if(grid->grid[i][j][0] != '#'){
                 findAllWordsHelper(grid, dict, i, j, isVisited, addSuffix(word,grid->grid[i][j]));
                 isVisited[(i * grid->size) + j] = false;
