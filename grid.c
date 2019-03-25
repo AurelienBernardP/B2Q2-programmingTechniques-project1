@@ -72,6 +72,9 @@ static void deleteSuffix(char* word, char* suffix);
  * *******************/
 static void findAllWordsHelper(Grid* grid, Root* dict, size_t line, size_t col,
                                                     bool* isVisited, char* word);
+                                                    
+static size_t stringLength(char* word);
+
 
 static Grid* allocGrid(size_t gridSize){
     //Allocation of a pointer to the structure of type Grid
@@ -91,21 +94,21 @@ static Grid* allocGrid(size_t gridSize){
     }
 
     //Allocating the matrix of string which represents the grid
-    newGrid->grid = malloc(newGrid->size * sizeof(char**));
+    newGrid->grid = calloc(newGrid->size, sizeof(char**));
     if(!newGrid->grid){
         printf("Error during memory allocation\n");
         free(newGrid);
         return NULL;
     }
     for(size_t i = 0; i < newGrid->size; i++){
-        newGrid->grid[i] = malloc(newGrid->size * sizeof(char*));
+        newGrid->grid[i] = calloc(newGrid->size, sizeof(char*));
         if(!newGrid->grid[i]){
             printf("Error during memory allocation\n");
             destroyGrid(newGrid);
             return NULL;
         }
         for(size_t j = 0; j<newGrid->size; j++){
-            newGrid->grid[i][j] = malloc(MAX_CHAR_PER_SQR * sizeof(char));// array of char in each element of the matrix
+            newGrid->grid[i][j] = calloc(MAX_CHAR_PER_SQR, sizeof(char));// array of char in each element of the matrix
             if(!newGrid->grid[i][j]){
                 printf("Error during memory allocation\n");
                 destroyGrid(newGrid);
@@ -122,6 +125,39 @@ Root* getWordsFound(Grid* grid){
     if(!grid) return NULL;
 
     return grid->wordsFound;
+}
+
+//finir valgrind du code
+//organiser karaoke
+//organiser bouffe
+//finir exo 7 et 9
+
+static void copyStringInString(Grid* grid, size_t line, char* content){
+    if(!grid || !content){
+        printf("Error copyStringInString: grid or content empty!\n");
+        return;
+    }
+
+    if(stringLength(content) > (grid->size * (MAX_CHAR_PER_SQR + 1))){
+        printf("Error copyStringInString: content too long!\n");
+        return;
+    }
+
+    size_t i, j, row;
+    row = 0;
+    i = 0;
+    while(row < grid->size){
+        j = 0;
+        while(content[i] != ' ' && i < stringLength(content)){
+            grid->grid[line][row][j] = content[i];
+            i++;
+            j++;
+        }
+        i++;
+        row++;
+    }
+
+    return;
 }
 
 Grid* initGrid(char* path){
@@ -159,13 +195,11 @@ Grid* initGrid(char* path){
         return NULL;
     }
 
-    const char delim[2] = " ";//Delimitation between each cell in the grid
-
     //Initialisation of the grid based on the file
     for(size_t i = 0; i < gridSize ; i++){
-        grid->grid[i][0] = strcpy(grid->grid[i][0], strtok(fileLine,delim));
-        for(size_t j = 1; j < gridSize; j++)
-            grid->grid[i][j] = strcpy(grid->grid[i][j], strtok(NULL,delim));
+        if(fileLine[stringLength(fileLine) - 1] == '\n')
+            fileLine[stringLength(fileLine) - 1] = '\0';
+        copyStringInString(grid, i, fileLine);
         fgets(fileLine,MAX_CHAR_PER_LINE,fp);
     }
 
@@ -197,20 +231,33 @@ void destroyGrid(Grid* grid){
     return;
 }
 
+static size_t stringLength(char* word){
+    if(!word)
+        return 0;
+
+    size_t i = 0;
+    while(word[i] != '\0')
+        i++;
+    
+    return i;
+}
+
 static char* addSuffix(char* word, char* suffix){
-    if(!suffix)
+    if(!suffix && suffix[0] != '#')
         return word;
 
     //Check if the suffixe can be added in the word
-    if(((int)MAX_CHAR_PER_LINE - (int)(strlen(word) + strlen(suffix)) < 0)){
+
+
+    if(((int)MAX_CHAR_PER_LINE - (int)(stringLength(word) + stringLength(suffix)) < 0)){
         printf("Error addSuffix: the word has reached its size limit!\n");
         return word;
     }
 
     //Adding the suffix
-    size_t n = strlen(suffix);
+    size_t n = stringLength(suffix);
     for(size_t i = 0; i <= n; i++)
-        word[strlen(word)] = suffix[i];
+        word[stringLength(word)] = suffix[i];
 
     return word;
 }
@@ -220,9 +267,9 @@ static void deleteSuffix(char* word, char* suffix){
         return;
     
     //Deleting the suffix
-    size_t n = strlen(suffix);
+    size_t n = stringLength(suffix);
     for(size_t i = 0; i < n; i++)
-        word[strlen(word)-1] = '\0';
+        word[stringLength(word)-1] = '\0';
     
     return;
 }
@@ -306,22 +353,22 @@ static void findAllWordsHelper(Grid* grid, Root* dict, size_t line, size_t col,
     }
 }
 
-void findAllWords(Grid* grid, Root* dict){
+int findAllWords(Grid* grid, Root* dict){
     if(!grid || !dict){
         printf("Error findAllWords: Grid or dictionnary empty!\n");
-        return;
+        return -1;
     }
 
     bool* isVisited = calloc(grid->size * grid->size, sizeof(bool));
     if(!isVisited){
         printf("Error findAllWords: Allocation failed!\n");
-        return;
+        return -1;
     }
 
-    char* word = malloc(sizeof(char) * MAX_CHAR_PER_LINE);
+    char* word = calloc(MAX_CHAR_PER_LINE, sizeof(char));
     if(!word){
         printf("Error findAllWorlds: Allocation failed!\n");
-        return;
+        return -1;
     }
 
     //Each cell of the grid is given as the origin of the word
@@ -335,6 +382,8 @@ void findAllWords(Grid* grid, Root* dict){
             deleteSuffix(word, grid->grid[i][j]);
         }
     }
+    free(word);
+    free(isVisited);
     
-    return;
+    return 0;
 }
