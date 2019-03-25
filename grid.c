@@ -198,7 +198,7 @@ void destroyGrid(Grid* grid){
 }
 
 static char* addSuffix(char* word, char* suffix){
-    if(!suffix || suffix[0] == '#')
+    if(!suffix)
         return word;
 
     //Check if the suffixe can be added in the word
@@ -232,6 +232,10 @@ static void findAllWordsHelper(Grid* grid, Root* dict, size_t line, size_t col,
 
     //Keeping a trace of our path in the grid
     isVisited[(line * grid->size) + col] = true;
+
+    //If it is an obstacle, the function stops
+    if(grid->grid[line][col][0] == '#')
+        return;
 
     switch(isWordInTrie(dict, word)){
         case 1:
