@@ -54,9 +54,9 @@ void destroyGrid(Grid* grid);
  *  dict, a pointer to the structure of type Root
  *
  * RETURN
- * void, all the words from the grid and the dictionary are saved.
- * Prints a message if an error occurs
+ * 0, success, all the words from the grid and the dictionary are saved.
+ * -1; Prints a message if an error occurs
  * ------------------------------------------------------------------------- */
-void findAllWords(Grid* grid, Root* dict);
+int findAllWords(Grid* grid, Root* dict);
 
 #endif
