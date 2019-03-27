@@ -44,7 +44,7 @@ Root* initRoot(void);
 void insertWord(Root* root, char* word);
 
 /* ------------------------------------------------------------------------- *
- * Prints all the words in lower case contained in a TST, into the wanted file stream.
+ * Prints all the words contained in a TST, into the wanted file stream.
  *
  * PARAMETERS
  * head : Node pointer to the root of the previously created TST
