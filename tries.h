@@ -40,8 +40,6 @@ Root* initRoot(void);
  * RETURN
  * void, the word will be inserted on success,
  *
- * USE:
- *       i
  * ------------------------------------------------------------------------- */
 void insertWord(Root* root, char* word);
 
