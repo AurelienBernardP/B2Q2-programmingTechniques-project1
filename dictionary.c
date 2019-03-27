@@ -16,7 +16,12 @@ Root* initDictionary(char* path){
     }
 
     Root* root = initRoot();
-    char word[200] = {'\0'};
+    char* word = calloc(LONGEST_WORD_SIZE, sizeof(char));
+    if(!word){
+        destroyFromRoot(root);
+        fclose(fp);
+        return NULL;
+    }
 
     while(fgets(word, LONGEST_WORD_SIZE ,fp) != NULL)
         insertWord(root, word);
