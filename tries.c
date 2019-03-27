@@ -143,7 +143,7 @@ static Node* insertWordHelper(Node* head, char* word, size_t index){
     if(!word) return head;
 
     char newLetter = word[index];
-    if(newLetter == '\n')
+    if(newLetter == '\n' || newLetter == 13)
         newLetter = '\0';
 
     if(!head){
