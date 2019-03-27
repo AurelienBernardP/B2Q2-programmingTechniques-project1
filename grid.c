@@ -280,7 +280,7 @@ static size_t stringLength(char* word){
 }
 
 static char* addSuffix(char* word, char* suffix){
-    if(!suffix && suffix[0] != '#')
+    if(!suffix || suffix[0] == '#')
         return word;
 
     //Check if the suffix can be added to the word
@@ -299,7 +299,7 @@ static char* addSuffix(char* word, char* suffix){
 }
 
 static void deleteSuffix(char* word, char* suffix){
-    if(!word || !suffix)
+    if(!word || !suffix || suffix[0] == '#')
         return;
     
     //Deleting the suffix from the word
