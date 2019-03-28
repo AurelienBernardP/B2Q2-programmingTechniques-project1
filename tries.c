@@ -142,7 +142,7 @@ static Node* newNode(char newLetter, bool isEnd){
 static Node* insertWordHelper(Node* head, char* word, size_t index){
     if(!word) return head;
 
-    char newLetter = word[index];
+    char newLetter = toupper(word[index]);
     if(newLetter == '\n' || newLetter == 13)
         newLetter = '\0';
 
@@ -172,7 +172,7 @@ void insertWord(Root* root, char* word){
     if(!root || !word || word[0] < 'A') // arguments are not formated correctly 
         return;
 
-    size_t indexOfRoot = tolower(word[0]) - 'a';//compute the branch of the root in which the word could be
+    size_t indexOfRoot = toupper(word[0]) - 'A';//compute the branch of the root in which the word could be
     root->roots[indexOfRoot] = insertWordHelper(root->roots[indexOfRoot], word, 0);
 
     return; 
@@ -189,7 +189,7 @@ static unsigned int isWordInTrieHelper(Node* head, char* word, size_t index){
     if(!word)
         return 0;// false
     
-    char letter = word[index];
+    char letter = toupper(word[index]);
     if((('\0' == letter) && ('\0'== head->letter)) || (word[index+1] == '\0' && head->isEndOfWord && letter == head->letter))
         return 1;//true, word has been found
     if(letter == '\0' && !head->left)
@@ -217,7 +217,7 @@ unsigned int isWordInTrie(Root* root, char* word){
         return false;
     }
 
-    size_t indexOfRoot = tolower(word[0]) - 'a';//compute the branch of the root in which the word should be
+    size_t indexOfRoot = toupper(word[0]) - 'A';//compute the branch of the root in which the word should be
     return isWordInTrieHelper(root->roots[indexOfRoot], word, 0);
 }
 
