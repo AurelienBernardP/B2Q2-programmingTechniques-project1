@@ -1,6 +1,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 #include<stdbool.h>
+#include<ctype.h>
 
 #include"grid.h"
 #include"tries.h"
@@ -21,7 +22,6 @@ struct grid_t{
     size_t size;
     Root* wordsFound;
 };
-
 
 const size_t MAX_CHAR_PER_SQR = 10; //Number max. of characters in a case of the grid
 const size_t MAX_CHAR_PER_LINE = 200; //The size of the longest word possible in the dictionnary
@@ -65,7 +65,6 @@ static char* addSuffix(char* word, char* suffix);
  *  If an error occurs, prints a message
  * ------------------------------------------------------------------------- */
 static void copyContentInGrid(Grid* grid, size_t line, char* content);
-
 
 /* ------------------------------------------------------------------------- *
  * Delete the string given by "suffix" from the string "word"
@@ -175,8 +174,8 @@ static void copyContentInGrid(Grid* grid, size_t line, char* content){
     while(row < grid->size){
         //For each word of the content, a row is associated to it
         j = 0;
-        while(i < contentLength && content[i] != ' '){
-            grid->grid[line][row][j] = content[i];
+        while(i <= contentLength && content[i] != ' ' && content[i] != '\n' && content[i] != 13){
+            grid->grid[line][row][j] = toupper(content[i]);
             i++;
             j++;
         }
@@ -209,7 +208,7 @@ Grid* initGrid(char* path){
 
     fgets(fileLine,MAX_CHAR_PER_LINE,fp);
     size_t gridSize = 1;// 1 as there is no space before the first element
-    for(size_t i = 0; fileLine[i] != '\n' && i < MAX_CHAR_PER_LINE; i++){
+    for(size_t i = 0; fileLine[i] != '\n' && i < MAX_CHAR_PER_LINE && fileLine[i] != 13; i++){
         if(fileLine[i] == ' ')
             gridSize++;
     }
@@ -225,10 +224,7 @@ Grid* initGrid(char* path){
 
     //Initialisation of the grid based on the file
     for(size_t i = 0; i < gridSize ; i++){
-        //Removing the EOL character
-        if(fileLine[stringLength(fileLine) - 1] == '\n')
-            fileLine[stringLength(fileLine) - 1] = '\0';
-        
+
         //Completing the line of the grid based on the file
         copyContentInGrid(grid, i, fileLine);
         if(!grid->grid[i]){
@@ -322,7 +318,7 @@ static void findAllWordsHelper(Grid* grid, Root* dict, size_t line, size_t col,
     //If it is an obstacle, the function stops
     if(grid->grid[line][col][0] == '#')
         return;
-
+        
     switch(isWordInTrie(dict, word)){
         case 1:
             //Adding the word to the words found
