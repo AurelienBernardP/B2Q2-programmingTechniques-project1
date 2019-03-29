@@ -25,7 +25,8 @@ Root* initDictionary(char* path){
 
     while(fgets(word, LONGEST_WORD_SIZE ,fp) != NULL)
         insertWord(root, word);
-
+    
+    free(word);
     fclose(fp);
     return root;
 }
