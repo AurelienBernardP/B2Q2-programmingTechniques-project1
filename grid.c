@@ -24,7 +24,7 @@ struct grid_t{
 };
 
 const size_t MAX_CHAR_PER_SQR = 10; //Number max. of characters in a case of the grid
-const size_t MAX_CHAR_PER_LINE = 200; //The size of the longest word possible in the dictionnary
+const size_t MAX_CHAR_PER_LINE = 200; //The size of the longest word possible in the dictionary
 
 /* ------------------------------------------------------------------------- *
  * Allocates a structure of type Grid based on the size given
