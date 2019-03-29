@@ -192,8 +192,8 @@ static unsigned int isWordInTrieHelper(Node* head, char* word, size_t index){
     char letter = toupper(word[index]);
     if((('\0' == letter) && ('\0'== head->letter)) || (word[index+1] == '\0' && head->isEndOfWord && letter == head->letter))
         return 1;//true, word has been found
-    if(letter == '\0' && !head->left)
-        return 0;// false, as the char '\0' is the smalles value charachter if there are no left child it means the word is not in the trie
+    if(letter == '\0')
+        return 0;// false, as the char '\0' is only reached if the last letter of the word found a match in the trie, but its end of word value was set to false.
 
     if(!head->right && !head->middle && !head->left)
         return 2;// this value means that there are no words with this prefix
